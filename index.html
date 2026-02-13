@@ -3,121 +3,121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal E-Kantin - SD Indonesia Hebat</title>
+    <title>Portal E-Kantin - SDN 169</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; }
-        .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+        .bg-pattern { background-image: url('https://www.transparenttextures.com/patterns/cubes.png'); }
+        .btn-hover { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .btn-hover:hover { transform: translateY(-5px); }
     </style>
 </head>
-<body class="bg-indigo-950 min-h-screen flex items-center justify-center p-4 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]">
+<body class="bg-indigo-950 min-h-screen flex items-center justify-center p-4 bg-pattern">
 
-    <div class="max-w-4xl w-full grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="max-w-4xl w-full grid grid-cols-1 md:grid-cols-2 gap-8">
         
-        <div class="space-y-6">
+        <div class="space-y-6 animate-in slide-in-from-left duration-700">
             <div class="bg-white p-8 rounded-[3rem] shadow-2xl border-b-8 border-yellow-400">
-                <div class="mb-6">
-                    <h1 class="text-3xl font-black text-indigo-900 tracking-tighter leading-none uppercase">E-Kantin 🍎</h1>
-                    <p class="text-xs font-bold text-slate-400 mt-2 tracking-widest uppercase">Portal Siswa & Kasir Terpadu</p>
+                <div class="mb-8 text-center md:text-left">
+                    <h1 class="text-3xl font-black text-indigo-900 tracking-tighter leading-none uppercase italic">E-Kantin Pro 🍎</h1>
+                    <p class="text-[10px] font-bold text-slate-400 mt-2 tracking-[0.3em] uppercase">Digital Ecosystem SDN 169</p>
                 </div>
                 
                 <div class="grid grid-cols-1 gap-4">
-                    <button onclick="window.location.href='cek-saldo.html'" class="group bg-slate-50 p-6 rounded-[2rem] border-2 border-transparent hover:border-indigo-500 transition-all text-left">
+                    <button onclick="window.location.href='cek-saldo.html'" class="btn-hover group bg-slate-50 p-6 rounded-[2rem] border-2 border-transparent hover:border-indigo-500 text-left shadow-sm">
                         <div class="flex justify-between items-center">
                             <div>
-                                <h3 class="font-black text-indigo-900 uppercase">Cek Saldo</h3>
-                                <p class="text-[10px] text-slate-500 font-bold uppercase">Lihat Sisa Uang & Riwayat</p>
+                                <h3 class="font-black text-indigo-900 uppercase text-sm">Cek Saldo Siswa</h3>
+                                <p class="text-[9px] text-slate-500 font-bold uppercase tracking-widest">Lihat Sisa Uang & Riwayat</p>
                             </div>
-                            <span class="text-2xl group-hover:scale-125 transition-transform">💳</span>
+                            <span class="text-2xl group-hover:rotate-12 transition-transform">💳</span>
                         </div>
                     </button>
 
-                    <button onclick="loginKasir()" class="group bg-indigo-600 p-6 rounded-[2rem] text-white shadow-xl hover:bg-indigo-700 transition-all text-left">
+                    <button onclick="window.location.href='kasir.html'" class="btn-hover group bg-indigo-600 p-6 rounded-[2rem] text-white shadow-xl hover:bg-indigo-700 text-left">
                         <div class="flex justify-between items-center">
                             <div>
-                                <h3 class="font-black uppercase">Masuk Kasir</h3>
-                                <p class="text-[10px] text-indigo-200 font-bold uppercase">Layanan Transaksi Stan</p>
+                                <h3 class="font-black uppercase text-sm">Portal Kasir Stan</h3>
+                                <p class="text-[9px] text-indigo-200 font-bold uppercase tracking-widest">Scan Belanjaan & Jualan</p>
                             </div>
-                            <span class="text-2xl group-hover:scale-125 transition-transform">🛒</span>
+                            <span class="text-2xl group-hover:scale-110 transition-transform">🛒</span>
                         </div>
                     </button>
 
-                    <button onclick="window.location.href='verifikasi-belanja.html'" class="group bg-amber-50 p-6 rounded-[2rem] border-2 border-amber-200 hover:border-amber-500 transition-all text-left">
+                    <button onclick="window.location.href='verifikasi.html'" class="btn-hover group bg-amber-50 p-6 rounded-[2rem] border-2 border-amber-200 hover:border-amber-500 text-left">
                         <div class="flex justify-between items-center">
                             <div>
-                                <h3 class="font-black text-amber-900 uppercase italic">Verifikasi Belanja</h3>
-                                <p class="text-[10px] text-amber-600 font-bold uppercase">Cek Kesesuaian Item & Scan Kartu</p>
+                                <h3 class="font-black text-amber-900 uppercase text-sm italic">Verifikasi Belanja</h3>
+                                <p class="text-[9px] text-amber-600 font-bold uppercase tracking-widest">Cek Kesesuaian Item & Barcode</p>
                             </div>
-                            <span class="text-2xl group-hover:scale-125 transition-transform">🔍</span>
+                            <span class="text-2xl group-hover:animate-pulse transition-transform">🔍</span>
                         </div>
                     </button>
                 </div>
             </div>
         </div>
 
-        <div class="bg-white/10 backdrop-blur-md p-8 rounded-[3rem] border border-white/20 shadow-2xl flex flex-col justify-center">
+        <div class="bg-white/10 backdrop-blur-md p-8 rounded-[3rem] border border-white/20 shadow-2xl flex flex-col justify-center animate-in slide-in-from-right duration-700">
             <div class="text-center mb-8">
-                <span class="bg-yellow-400 text-indigo-900 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-tighter">Owner Access</span>
-                <h2 class="text-white text-xl font-black mt-3 uppercase italic">Monitoring Pusat</h2>
+                <span class="bg-yellow-400 text-indigo-900 text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest shadow-lg">Secure Access</span>
+                <h2 class="text-white text-xl font-black mt-4 uppercase italic tracking-tighter">Monitoring Pusat</h2>
+                <p class="text-indigo-300 text-[9px] uppercase font-bold mt-1 opacity-60 italic">Khusus Pengelola Kantin & Guru</p>
             </div>
 
             <div class="space-y-4">
                 <div>
-                    <label class="text-[10px] font-black text-indigo-200 uppercase ml-4 mb-2 block">Email Admin</label>
-                    <input type="email" id="adm_email" placeholder="contoh@gmail.com" class="w-full p-4 rounded-2xl bg-white/5 border border-white/10 text-white font-bold text-sm outline-none focus:ring-2 ring-yellow-400 transition-all placeholder:opacity-30">
+                    <label class="text-[10px] font-black text-indigo-200 uppercase ml-4 mb-2 block tracking-widest">Email Pengelola</label>
+                    <input type="email" id="adm_email" placeholder="admin@sekolah.id" class="w-full p-4 rounded-2xl bg-white/5 border border-white/10 text-white font-bold text-sm outline-none focus:ring-2 ring-yellow-400 transition-all placeholder:opacity-20">
                 </div>
 
                 <div>
-                    <label class="text-[10px] font-black text-indigo-200 uppercase ml-4 mb-2 block">Kata Sandi</label>
+                    <label class="text-[10px] font-black text-indigo-200 uppercase ml-4 mb-2 block tracking-widest">Kata Sandi</label>
                     <input type="password" id="adm_pass" placeholder="••••••••" class="w-full p-4 rounded-2xl bg-white/5 border border-white/10 text-white font-bold text-sm outline-none focus:ring-2 ring-yellow-400 transition-all">
                 </div>
 
-                <div class="grid grid-cols-2 gap-3 pt-4">
-                    <button onclick="loginOwner('monitoring')" class="bg-white/10 text-white border border-white/20 font-black py-4 rounded-2xl text-[10px] uppercase hover:bg-white/20 transition-all">
-                        📊 Monitoring
+                <div class="grid grid-cols-2 gap-3 pt-6">
+                    <button onclick="loginOwner('monitoring')" class="bg-white/10 text-white border border-white/20 font-black py-4 rounded-2xl text-[9px] uppercase hover:bg-white/20 transition-all tracking-tighter">
+                        📊 Dashboard
                     </button>
-                    <button onclick="loginOwner('menu')" class="bg-white/10 text-white border border-white/20 font-black py-4 rounded-2xl text-[10px] uppercase hover:bg-white/20 transition-all">
+                    <button onclick="loginOwner('menu')" class="bg-white/10 text-white border border-white/20 font-black py-4 rounded-2xl text-[9px] uppercase hover:bg-white/20 transition-all tracking-tighter">
                         🍱 Atur Menu
                     </button>
-                    <button onclick="loginOwner('deposit')" class="col-span-2 bg-emerald-500 text-white font-black py-4 rounded-2xl text-[10px] uppercase hover:bg-emerald-400 transition-all shadow-lg flex items-center justify-center gap-2">
-                        💰 ISI SALDO (DEPOSIT)
+                    <button onclick="loginOwner('deposit')" class="col-span-2 bg-emerald-500 text-white font-black py-5 rounded-2xl text-[11px] uppercase hover:bg-emerald-400 transition-all shadow-xl flex items-center justify-center gap-2 tracking-[0.1em]">
+                        💰 KEUANGAN (TOP UP SALDO)
                     </button>
                 </div>
             </div>
             
-            <p class="text-[9px] text-indigo-300/50 text-center mt-8 font-bold uppercase tracking-[0.3em]">v2.0 Full Integration</p>
+            <p class="text-[9px] text-indigo-300/40 text-center mt-10 font-bold uppercase tracking-[0.5em]">System Version 2.0</p>
         </div>
     </div>
 
     <script>
-        function loginKasir() {
-            sessionStorage.setItem("portalLoggedIn", "true");
-            window.location.href = "kasir-kantin.html";
-        }
-
         function loginOwner(tujuan) {
             const email = document.getElementById('adm_email').value.trim();
             const pass = document.getElementById('adm_pass').value.trim();
 
-            // Pengecekan Dua Akun
+            // Sesuai Akun Bapak
             const isUser1 = (email === "kiswanto73@guru.sd.belajar.id" && pass === "Kis7384@");
             const isUser2 = (email === "sdn169.cintadamai@gmail.com" && pass === "Cintadama1");
 
             if (isUser1 || isUser2) {
+                // Simpan status login di session
                 sessionStorage.setItem("ownerLoggedIn", "true");
-                sessionStorage.setItem("portalLoggedIn", "true");
+                sessionStorage.setItem("ownerEmail", email);
 
+                // Arahkan ke file yang sesuai
                 if (tujuan === 'monitoring') {
-                    window.location.href = "admin-kantin.html";
+                    window.location.href = "monitoring.html";
                 } else if (tujuan === 'menu') {
                     window.location.href = "manajemen-menu.html";
                 } else if (tujuan === 'deposit') {
-                    window.location.href = "deposit.html";
+                    window.location.href = "keuangan.html";
                 }
                 
             } else {
-                alert("❌ Akses Ditolak!\nEmail atau Password Owner salah.");
+                alert("❌ AKSES DITOLAK!\nEmail atau Password Owner salah.");
             }
         }
     </script>
