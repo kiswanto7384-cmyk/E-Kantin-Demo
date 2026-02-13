@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cek Saldo Siswa - E-Kantin</title>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Desain tombol bawaan library agar lebih rapi */
+        #reader__dashboard_section_csr button {
+            background-color: #4f46e5 !important;
+            color: white !important;
+            padding: 8px 16px !important;
+            border-radius: 10px !important;
+            font-weight: bold !important;
+            font-size: 11px !important;
+            text-transform: uppercase !important;
+            margin: 5px !important;
+        }
+        #reader { border: none !important; }
+    </style>
+</head>
+<body class="bg-indigo-950 p-4 min-h-screen flex items-center justify-center font-sans">
+
+    <div class="max-w-md w-full bg-white rounded-[3rem] p-8 shadow-2xl border-b-8 border-yellow-400">
+        <div class="text-center mb-6">
+            <h1 class="text-2xl font-black text-indigo-900 uppercase italic">Cek Saldo 💳</h1>
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Scan QR Siswa untuk Informasi</p>
+        </div>
+
+        <div class="relative mb-6">
+            <div id="reader" class="overflow-hidden rounded-3xl bg-slate-100 border-4 border-dashed border-slate-200"></div>
+        </div>
+
+        <div class="space-y-4">
+            <input type="text" id="inputID" placeholder="ID KARTU (MANUAL)" 
+                class="w-full p-4 bg-slate-50 rounded-2xl font-black text-center text-lg outline-none focus:ring-4 ring-indigo-500 transition-all uppercase">
+            
+            <button onclick="prosesCekSaldo(document.getElementById('inputID').value)" 
+                class="w-full bg-indigo-600 text-white font-black py-4 rounded-2xl shadow-lg hover:bg-indigo-700 active:scale-95 transition-all uppercase text-xs tracking-widest">
+                Cek Data Manual 🔍
+            </button>
+
+            <div id="hasilCek" class="hidden mt-6 p-6 bg-emerald-50 rounded-[2rem] border-2 border-emerald-100 text-center animate-pulse-once">
+                <p id="resNama" class="text-lg font-black text-indigo-900 uppercase leading-none"></p>
+                <p id="resKelas" class="text-[10px] font-bold text-slate-400 uppercase mt-1"></p>
+                <div class="my-4 h-[1px] bg-emerald-200"></div>
+                <p class="text-[9px] font-black text-emerald-600 uppercase">Saldo Tersisa:</p>
+                <p id="resSaldo" class="text-4xl font-black text-emerald-700 tracking-tighter"></p>
+            </div>
+        </div>
+
+        <a href="index.html" class="block text-center mt-8 text-[10px] font-black text-slate-400 uppercase hover:text-indigo-600"> Kembali ke Portal 🏠</a>
+    </div>
+
+    <script>
+        // CONFIG FIREBASE
+        const firebaseConfig = {
+            apiKey: "AIzaSyCUjE8WXa8Py4vnojrXDUR3uCvnQEzP6zQ",
+            authDomain: "e-kantin-91f0c.firebaseapp.com",
+            databaseURL: "https://e-kantin-91f0c-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "e-kantin-91f0c",
+            storageBucket: "e-kantin-91f0c.firebasestorage.app",
+            messagingSenderId: "981834126006",
+            appId: "1:981834126006:web:dac8bb0ec1da90549b4c17"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // LOGIKA SCANNER (Sama dengan Kasir)
+        function onScanSuccess(decodedText) {
+            document.getElementById('inputID').value = decodedText;
+            prosesCekSaldo(decodedText);
+        }
+
+        // Jalankan scanner dengan konfigurasi standar yang stabil
+        let html5QrcodeScanner = new Html5QrcodeScanner(
+            "reader", { fps: 10, qrbox: 250 }
+        );
+        html5QrcodeScanner.render(onScanSuccess);
+
+        // FUNGSI CEK DATA
+        function prosesCekSaldo(id) {
+            const box = document.getElementById('hasilCek');
+            if(!id) return;
+
+            db.ref('kantin_users/' + id).once('value', snap => {
+                if(snap.exists()) {
+                    const d = snap.val();
+                    document.getElementById('resNama').innerText = d.nama;
+                    document.getElementById('resKelas').innerText = d.kelas;
+                    document.getElementById('resSaldo').innerText = "Rp " + (d.saldo || 0).toLocaleString();
+                    box.classList.remove('hidden');
+                    
+                    // Mainkan efek getar sedikit jika di HP
+                    if (navigator.vibrate) navigator.vibrate(50);
+                } else {
+                    alert("Maaf, Kartu '" + id + "' tidak ditemukan!");
+                    box.classList.add('hidden');
+                }
+            });
+        }
+    </script>
+</body>
+</html>

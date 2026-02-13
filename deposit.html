@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KEUANGAN - E-Kantin</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+</head>
+<body class="bg-slate-100 min-h-screen font-sans">
+
+    <div class="max-w-md mx-auto p-4">
+        <div class="bg-emerald-600 text-white p-6 rounded-[2.5rem] shadow-xl mb-6 border-b-8 border-emerald-800">
+            <h1 class="text-xl font-black italic uppercase tracking-tighter text-center">Keuangan Siswa 💰</h1>
+            <p class="text-[10px] font-bold opacity-80 uppercase text-center">Top Up & Tarik Saldo Real-Time</p>
+        </div>
+
+        <div id="scannerContainer" class="bg-white p-4 rounded-[2.5rem] shadow-sm mb-6 border border-emerald-50">
+            <div id="reader" class="rounded-[2rem] overflow-hidden border-4 border-emerald-50 mb-4"></div>
+            <p class="text-center text-[10px] font-black text-slate-400 uppercase tracking-widest">Arahkan Barcode ID Siswa ke Kamera</p>
+        </div>
+
+        <div id="depositForm" class="hidden space-y-4">
+            <div class="bg-white p-6 rounded-[2.5rem] shadow-lg border-2 border-emerald-500">
+                <div class="text-center mb-4">
+                    <h2 id="namaSiswa" class="text-lg font-black text-indigo-900 uppercase">NAMA SISWA</h2>
+                    <p id="saldoSekarang" class="text-xs font-bold text-emerald-600">Saldo: Rp 0</p>
+                </div>
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="text-[8px] font-black text-slate-400 uppercase ml-2">Nominal (Rp)</label>
+                        <input type="number" id="nominalAksi" placeholder="Contoh: 10000" 
+                            class="w-full p-4 bg-slate-50 rounded-2xl font-black text-xl text-center text-indigo-700 outline-none focus:ring-4 ring-emerald-100 transition-all">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <button onclick="prosesTransaksi('TOPUP')" 
+                            class="bg-emerald-500 text-white font-black py-5 rounded-2xl shadow-lg hover:bg-emerald-600 active:scale-95 transition-all uppercase text-[10px]">
+                            Isi Saldo ✅
+                        </button>
+                        <button onclick="prosesTransaksi('TARIK')" 
+                            class="bg-orange-500 text-white font-black py-5 rounded-2xl shadow-lg hover:bg-orange-600 active:scale-95 transition-all uppercase text-[10px]">
+                            Tarik Tunai 💸
+                        </button>
+                    </div>
+                    
+                    <button onclick="batalScan()" class="w-full text-slate-400 font-bold text-[9px] uppercase mt-2">Batal / Scan Ulang</button>
+                </div>
+            </div>
+        </div>
+
+        <a href="index.html" class="block text-center mt-8 text-slate-400 font-black text-[10px] uppercase tracking-widest">Kembali ke Portal</a>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCUjE8WXa8Py4vnojrXDUR3uCvnQEzP6zQ",
+            authDomain: "e-kantin-91f0c.firebaseapp.com",
+            databaseURL: "https://e-kantin-91f0c-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "e-kantin-91f0c",
+            storageBucket: "e-kantin-91f0c.firebasestorage.app",
+            messagingSenderId: "981834126006",
+            appId: "1:981834126006:web:dac8bb0ec1da90549b4c17"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const FONNTE_TOKEN = "4xNPsRSw3FPeUjR8cxXjaAT8xpKv";
+
+        let currentIdSiswa = null;
+        let currentSaldo = 0;
+        let currentNama = "";
+        let currentWA = "";
+        let scanner = new Html5Qrcode("reader");
+
+        function startScanner() {
+            scanner.start({ facingMode: "environment" }, { fps: 10, qrbox: 250 }, (id) => {
+                cariSiswa(id.trim());
+            }).catch(err => console.log(err));
+        }
+
+        function cariSiswa(id) {
+            db.ref('kantin_users/' + id).once('value', snap => {
+                const user = snap.val();
+                if (user) {
+                    currentIdSiswa = id;
+                    currentSaldo = user.saldo || 0;
+                    currentNama = user.nama;
+                    currentWA = user.wa;
+
+                    document.getElementById('namaSiswa').innerText = currentNama;
+                    document.getElementById('saldoSekarang').innerText = "Saldo Saat Ini: Rp " + currentSaldo.toLocaleString();
+                    document.getElementById('depositForm').classList.remove('hidden');
+                    document.getElementById('scannerContainer').classList.add('hidden');
+                    scanner.stop();
+                } else {
+                    alert("ID Siswa tidak ditemukan!");
+                }
+            });
+        }
+
+        function prosesTransaksi(tipe) {
+            const nominal = parseInt(document.getElementById('nominalAksi').value);
+            if (!nominal || nominal <= 0) return alert("Masukkan nominal yang benar!");
+
+            let saldoBaru;
+            let pesanWA;
+            let statusItem;
+
+            if (tipe === 'TOPUP') {
+                saldoBaru = currentSaldo + nominal;
+                statusItem = "TOP UP SALDO";
+                pesanWA = `*TOP UP BERHASIL 💰*\n\nAlhamdulillah, Saldo Ananda *${currentNama}* telah bertambah sebesar *Rp ${nominal.toLocaleString()}*.\n\n*Saldo Sekarang: Rp ${saldoBaru.toLocaleString()}*\n\n_E-Kantin SD Indonesia Hebat_`;
+            } else {
+                if (nominal > currentSaldo) return alert("Saldo tidak mencukupi untuk penarikan ini!");
+                saldoBaru = currentSaldo - nominal;
+                statusItem = "TARIK TUNAI";
+                pesanWA = `*PENARIKAN BERHASIL 💸*\n\nSaldo Ananda *${currentNama}* telah ditarik sebesar *Rp ${nominal.toLocaleString()}*.\n\n*Sisa Saldo: Rp ${saldoBaru.toLocaleString()}*\n\n_E-Kantin SD Indonesia Hebat_`;
+            }
+
+            const waktu = new Date().toLocaleString('id-ID');
+
+            // 1. Update Saldo
+            db.ref('kantin_users/' + currentIdSiswa + '/saldo').set(saldoBaru).then(() => {
+                
+                // 2. Catat Laporan
+                db.ref('kantin_laporan').push({
+                    idSiswa: currentIdSiswa,
+                    namaSiswa: currentNama,
+                    total: nominal,
+                    item: statusItem,
+                    stan: "ADMIN TABUNGAN",
+                    waktu: waktu
+                });
+
+                // 3. Kirim WA
+                if (currentWA) {
+                    fetch('https://api.fonnte.com/send', {
+                        method: 'POST',
+                        headers: { 'Authorization': FONNTE_TOKEN },
+                        body: new URLSearchParams({ 'target': currentWA, 'message': pesanWA })
+                    });
+                }
+
+                alert(`✅ ${statusItem} BERHASIL!\nSaldo sekarang: Rp ${saldoBaru.toLocaleString()}`);
+                location.reload();
+            });
+        }
+
+        function batalScan() {
+            location.reload();
+        }
+
+        startScanner();
+    </script>
+</body>
+</html>

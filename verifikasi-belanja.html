@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pemeriksa Belanja - E-Kantin</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+</head>
+<body class="bg-indigo-950 min-h-screen p-4 font-['Inter'] text-slate-800">
+
+    <div class="max-w-md mx-auto">
+        <div class="bg-amber-500 p-6 rounded-[2rem] shadow-xl mb-6 text-center border-b-4 border-amber-700">
+            <button onclick="window.location.href='index.html'" class="float-left text-amber-900 font-bold bg-white/20 w-8 h-8 rounded-full flex items-center justify-center">←</button>
+            <h1 class="text-xl font-black uppercase italic text-amber-900 leading-none">Petugas Pemeriksa</h1>
+            <p class="text-[10px] font-bold text-amber-800 opacity-80 uppercase tracking-widest mt-1">Verifikasi Struk Digital</p>
+        </div>
+
+        <div id="scannerArea" class="mb-6 rounded-[2rem] overflow-hidden border-4 border-amber-500 bg-black shadow-2xl relative">
+            <div id="reader" style="width: 100%;"></div>
+            <div id="scanMsg" class="absolute inset-0 flex items-center justify-center bg-black/40 text-white font-bold text-sm pointer-events-none text-center p-4 uppercase">
+                Arahkan ke Kartu Siswa
+            </div>
+        </div>
+
+        <div id="resultArea" class="hidden">
+            <div class="bg-white p-6 rounded-[2rem] shadow-xl border-t-8 border-emerald-500">
+                <div class="text-center mb-4 border-b pb-4">
+                    <h2 id="namaSiswa" class="text-xl font-black text-indigo-900 uppercase leading-none italic">Mencari...</h2>
+                    <p id="idSiswa" class="text-[10px] font-bold text-slate-400 mt-2 tracking-widest uppercase">ID: -</p>
+                </div>
+
+                <div class="bg-slate-50 rounded-2xl p-4 mb-4">
+                    <p class="text-[10px] font-black text-slate-400 uppercase mb-2 italic tracking-wider">Detail Belanja Terakhir:</p>
+                    <div id="listPesanan" class="text-xs font-bold text-slate-700 leading-relaxed uppercase">
+                        </div>
+                </div>
+
+                <div class="flex justify-between items-center px-2">
+                    <span class="text-xs font-black text-slate-500 uppercase tracking-widest">Total Bayar:</span>
+                    <span id="totalBayar" class="text-xl font-black text-emerald-600 font-mono">Rp 0</span>
+                </div>
+
+                <button onclick="resetPemeriksaan()" class="w-full mt-6 bg-indigo-600 text-white font-black py-4 rounded-2xl shadow-lg uppercase text-xs tracking-widest hover:bg-indigo-700 transition-all active:scale-95">
+                    Selesai & Scan Lagi
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // CONFIG DISAMAKAN DENGAN PRO KASIR (SINGAPURA)
+        const firebaseConfig = {
+            apiKey: "AIzaSyCUjE8WXa8Py4vnojrXDUR3uCvnQEzP6zQ",
+            authDomain: "e-kantin-91f0c.firebaseapp.com",
+            databaseURL: "https://e-kantin-91f0c-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "e-kantin-91f0c",
+            storageBucket: "e-kantin-91f0c.firebasestorage.app",
+            messagingSenderId: "981834126006",
+            appId: "1:981834126006:web:dac8bb0ec1da90549b4c17"
+        };
+
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        let html5QrCode = new Html5Qrcode("reader");
+
+        function startScanner() {
+            html5QrCode.start({ facingMode: "environment" }, { fps: 15, qrbox: 250 }, (id) => {
+                document.getElementById('scanMsg').classList.add('hidden');
+                cariRiwayat(id.trim());
+            }).catch(err => console.error(err));
+        }
+
+        function cariRiwayat(id) {
+            document.getElementById('resultArea').classList.remove('hidden');
+            document.getElementById('namaSiswa').innerText = "MENGECEK...";
+            document.getElementById('listPesanan').innerHTML = "Memuat rincian...";
+
+            // 1. CARI DI FOLDER 'kantin_users' (SESUAI KASIR)
+            db.ref('kantin_users/' + id).once('value').then(snap => {
+                const user = snap.val();
+
+                if (user) {
+                    document.getElementById('namaSiswa').innerText = user.nama;
+                    document.getElementById('idSiswa').innerText = "ID: " + id;
+                    
+                    // 2. CARI LAPORAN DI 'kantin_laporan' (SESUAI KASIR)
+                    // Kita cari data yang idSiswa-nya cocok
+                    db.ref('kantin_laporan').orderByChild('idSiswa').equalTo(id).limitToLast(1).once('value', tSnap => {
+                        if (tSnap.exists()) {
+                            tSnap.forEach(t => {
+                                const data = t.val();
+                                document.getElementById('listPesanan').innerText = data.item;
+                                document.getElementById('totalBayar').innerText = "Rp " + data.total.toLocaleString();
+                            });
+                        } else {
+                            document.getElementById('listPesanan').innerHTML = `<span class="text-red-500">BELUM ADA TRANSAKSI DI KASIR.</span>`;
+                            document.getElementById('totalBayar').innerText = "Rp 0";
+                        }
+                    });
+                } else {
+                    alert("ID TIDAK TERDAFTAR DI KANTIN_USERS!");
+                    resetPemeriksaan();
+                }
+            });
+        }
+
+        function resetPemeriksaan() {
+            document.getElementById('resultArea').classList.add('hidden');
+            document.getElementById('scanMsg').classList.remove('hidden');
+        }
+
+        startScanner();
+    </script>
+</body>
+</html>
