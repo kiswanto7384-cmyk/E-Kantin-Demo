@@ -8,51 +8,60 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/html5-qrcode"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        #reader__scan_region { background: white !important; }
+        video { border-radius: 1.5rem; }
+    </style>
 </head>
-<body class="bg-indigo-950 min-h-screen p-4 font-['Inter'] text-slate-800">
+<body class="bg-slate-950 min-h-screen p-4">
 
     <div class="max-w-md mx-auto">
-        <div class="bg-amber-500 p-6 rounded-[2rem] shadow-xl mb-6 text-center border-b-4 border-amber-700">
-            <button onclick="window.location.href='index.html'" class="float-left text-amber-900 font-bold bg-white/20 w-8 h-8 rounded-full flex items-center justify-center">←</button>
-            <h1 class="text-xl font-black uppercase italic text-amber-900 leading-none">Petugas Pemeriksa</h1>
-            <p class="text-[10px] font-bold text-amber-800 opacity-80 uppercase tracking-widest mt-1">Verifikasi Struk Digital</p>
+        <div class="bg-amber-500 p-6 rounded-[2.5rem] shadow-xl mb-6 flex items-center justify-between border-b-4 border-amber-700">
+            <div>
+                <h1 class="text-xl font-black uppercase italic text-amber-950 leading-none">Petugas Check</h1>
+                <p class="text-[9px] font-bold text-amber-900/60 uppercase tracking-widest mt-1">Verifikasi Struk Digital</p>
+            </div>
+            <button onclick="window.location.href='index.html'" class="bg-white/20 p-3 rounded-2xl text-amber-950 font-bold text-xs uppercase">Keluar</button>
         </div>
 
-        <div id="scannerArea" class="mb-6 rounded-[2rem] overflow-hidden border-4 border-amber-500 bg-black shadow-2xl relative">
-            <div id="reader" style="width: 100%;"></div>
-            <div id="scanMsg" class="absolute inset-0 flex items-center justify-center bg-black/40 text-white font-bold text-sm pointer-events-none text-center p-4 uppercase">
-                Arahkan ke Kartu Siswa
+        <div id="scannerArea" class="mb-6 rounded-[2.5rem] overflow-hidden border-4 border-amber-500 bg-black shadow-2xl relative aspect-square">
+            <div id="reader" class="w-full"></div>
+            <div id="scanMsg" class="absolute inset-0 flex flex-col items-center justify-center bg-black/40 text-white pointer-events-none p-6 text-center">
+                <div class="w-16 h-16 border-4 border-white/30 border-t-white rounded-full animate-spin mb-4"></div>
+                <p class="font-black text-xs uppercase tracking-widest">Arahkan Kamera ke Kartu Siswa</p>
             </div>
         </div>
 
-        <div id="resultArea" class="hidden">
-            <div class="bg-white p-6 rounded-[2rem] shadow-xl border-t-8 border-emerald-500">
-                <div class="text-center mb-4 border-b pb-4">
-                    <h2 id="namaSiswa" class="text-xl font-black text-indigo-900 uppercase leading-none italic">Mencari...</h2>
-                    <p id="idSiswa" class="text-[10px] font-bold text-slate-400 mt-2 tracking-widest uppercase">ID: -</p>
+        <div id="resultArea" class="hidden animate-in slide-in-from-bottom duration-500">
+            <div class="bg-white p-8 rounded-[3rem] shadow-2xl border-t-[12px] border-emerald-500">
+                <div class="text-center mb-6">
+                    <span class="bg-emerald-100 text-emerald-600 text-[9px] font-black px-4 py-1 rounded-full uppercase tracking-widest mb-2 inline-block">Siswa Terverifikasi</span>
+                    <h2 id="namaSiswa" class="text-2xl font-black text-slate-800 uppercase leading-tight italic">Memuat...</h2>
+                    <p id="idSiswa" class="text-[10px] font-bold text-slate-400 mt-1 tracking-widest">ID: -</p>
                 </div>
 
-                <div class="bg-slate-50 rounded-2xl p-4 mb-4">
-                    <p class="text-[10px] font-black text-slate-400 uppercase mb-2 italic tracking-wider">Detail Belanja Terakhir:</p>
-                    <div id="listPesanan" class="text-xs font-bold text-slate-700 leading-relaxed uppercase">
+                <div class="bg-slate-50 rounded-3xl p-5 mb-6">
+                    <p class="text-[9px] font-black text-slate-400 uppercase mb-3 tracking-widest italic border-b pb-2">Belanja Terakhir:</p>
+                    <div id="listPesanan" class="text-sm font-bold text-slate-700 leading-relaxed uppercase italic">
                         </div>
                 </div>
 
-                <div class="flex justify-between items-center px-2">
-                    <span class="text-xs font-black text-slate-500 uppercase tracking-widest">Total Bayar:</span>
-                    <span id="totalBayar" class="text-xl font-black text-emerald-600 font-mono">Rp 0</span>
+                <div class="flex justify-between items-center bg-emerald-50 p-5 rounded-2xl mb-6">
+                    <span class="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Total Bayar</span>
+                    <span id="totalBayar" class="text-xl font-black text-emerald-700">Rp 0</span>
                 </div>
 
-                <button onclick="resetPemeriksaan()" class="w-full mt-6 bg-indigo-600 text-white font-black py-4 rounded-2xl shadow-lg uppercase text-xs tracking-widest hover:bg-indigo-700 transition-all active:scale-95">
-                    Selesai & Scan Lagi
+                <button onclick="resetPemeriksaan()" class="w-full bg-indigo-600 text-white font-black py-5 rounded-2xl shadow-xl uppercase text-xs tracking-[0.2em] hover:bg-indigo-700 transition-all active:scale-95">
+                    Scan Kartu Lain 🔄
                 </button>
             </div>
         </div>
     </div>
 
     <script>
-        // CONFIG DISAMAKAN DENGAN PRO KASIR (SINGAPURA)
+        // FIREBASE CONFIG BAPAK
         const firebaseConfig = {
             apiKey: "AIzaSyCUjE8WXa8Py4vnojrXDUR3uCvnQEzP6zQ",
             authDomain: "e-kantin-91f0c.firebaseapp.com",
@@ -69,41 +78,45 @@
         let html5QrCode = new Html5Qrcode("reader");
 
         function startScanner() {
-            html5QrCode.start({ facingMode: "environment" }, { fps: 15, qrbox: 250 }, (id) => {
-                document.getElementById('scanMsg').classList.add('hidden');
-                cariRiwayat(id.trim());
-            }).catch(err => console.error(err));
+            html5QrCode.start(
+                { facingMode: "environment" }, 
+                { fps: 20, qrbox: { width: 250, height: 250 } }, 
+                (id) => {
+                    if (id) {
+                        if (navigator.vibrate) navigator.vibrate(100);
+                        cariRiwayat(id.trim());
+                    }
+                }
+            ).catch(err => console.error("Kamera gagal:", err));
         }
 
         function cariRiwayat(id) {
+            document.getElementById('scannerArea').classList.add('hidden');
             document.getElementById('resultArea').classList.remove('hidden');
             document.getElementById('namaSiswa').innerText = "MENGECEK...";
-            document.getElementById('listPesanan').innerHTML = "Memuat rincian...";
 
-            // 1. CARI DI FOLDER 'kantin_users' (SESUAI KASIR)
+            // 1. Ambil data siswa
             db.ref('kantin_users/' + id).once('value').then(snap => {
                 const user = snap.val();
-
                 if (user) {
                     document.getElementById('namaSiswa').innerText = user.nama;
                     document.getElementById('idSiswa').innerText = "ID: " + id;
                     
-                    // 2. CARI LAPORAN DI 'kantin_laporan' (SESUAI KASIR)
-                    // Kita cari data yang idSiswa-nya cocok
-                    db.ref('kantin_laporan').orderByChild('idSiswa').equalTo(id).limitToLast(1).once('value', tSnap => {
-                        if (tSnap.exists()) {
-                            tSnap.forEach(t => {
-                                const data = t.val();
-                                document.getElementById('listPesanan').innerText = data.item;
+                    // 2. Ambil transaksi terakhir siswa ini
+                    db.ref('kantin_laporan').orderByChild('idSiswa').equalTo(id).limitToLast(1).once('value', lSnap => {
+                        if (lSnap.exists()) {
+                            lSnap.forEach(row => {
+                                const data = row.val();
+                                document.getElementById('listPesanan').innerHTML = data.item.replace(/,/g, '<br>• ');
                                 document.getElementById('totalBayar').innerText = "Rp " + data.total.toLocaleString();
                             });
                         } else {
-                            document.getElementById('listPesanan').innerHTML = `<span class="text-red-500">BELUM ADA TRANSAKSI DI KASIR.</span>`;
+                            document.getElementById('listPesanan').innerHTML = `<span class="text-red-500 italic">BELUM ADA TRANSAKSI HARI INI.</span>`;
                             document.getElementById('totalBayar').innerText = "Rp 0";
                         }
                     });
                 } else {
-                    alert("ID TIDAK TERDAFTAR DI KANTIN_USERS!");
+                    alert("KARTU TIDAK DIKENAL!");
                     resetPemeriksaan();
                 }
             });
@@ -111,9 +124,10 @@
 
         function resetPemeriksaan() {
             document.getElementById('resultArea').classList.add('hidden');
-            document.getElementById('scanMsg').classList.remove('hidden');
+            document.getElementById('scannerArea').classList.remove('hidden');
         }
 
+        // Jalankan scanner otomatis saat buka halaman
         startScanner();
     </script>
 </body>
