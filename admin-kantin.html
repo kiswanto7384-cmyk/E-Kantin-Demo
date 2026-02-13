@@ -3,125 +3,122 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel - E-Kantin Demo</title>
+    <title>Admin Panel - E-Kantin SDN 169</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
 </head>
-<body class="bg-slate-100 p-2 md:p-6 font-sans">
+<body class="bg-slate-50 p-2 md:p-6 min-h-screen">
 
     <div class="max-w-7xl mx-auto">
-        <div class="bg-indigo-900 text-white p-6 rounded-[2.5rem] shadow-xl mb-6 flex flex-col md:flex-row justify-between items-center gap-4 border-b-4 border-yellow-400">
-            <div class="flex items-center gap-3">
-                <div class="bg-white/10 p-3 rounded-2xl text-xl">🚀</div>
+        <div class="bg-indigo-900 text-white p-6 rounded-[2.5rem] shadow-xl mb-6 flex flex-col md:flex-row justify-between items-center gap-4 border-b-8 border-yellow-400">
+            <div class="flex items-center gap-4">
+                <div class="bg-yellow-400 p-3 rounded-2xl text-indigo-900 font-black text-xl italic">K</div>
                 <div>
-                    <h1 class="text-xl font-black italic uppercase leading-none text-yellow-400">E-KANTIN DEMO SYSTEM</h1>
-                    <p class="text-[10px] font-bold text-indigo-300 uppercase mt-1 text-white">Dashboard Monitoring Real-Time</p>
+                    <h1 class="text-xl font-black italic uppercase leading-none text-yellow-400">ADMIN MONITORING</h1>
+                    <p class="text-[10px] font-bold text-indigo-200 uppercase mt-1">Sistem Kontrol E-Kantin SDN 169</p>
                 </div>
             </div>
             <div class="flex gap-2">
-                <a href="index.html" class="bg-white/10 px-4 py-2 rounded-xl text-[10px] font-bold uppercase text-white hover:bg-white/20">🏠 Beranda</a>
+                <button onclick="window.location.href='manajemen-menu.html'" class="bg-white/10 px-4 py-2 rounded-xl text-[10px] font-bold uppercase hover:bg-white/20 border border-white/10">🍴 Menu</button>
+                <button onclick="logout()" class="bg-red-500 px-4 py-2 rounded-xl text-[10px] font-bold uppercase shadow-lg">Keluar</button>
             </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-            <div class="bg-white p-5 rounded-[2rem] shadow-sm border-t-4 border-emerald-500">
+            <div class="bg-white p-6 rounded-[2.5rem] shadow-sm border-t-8 border-emerald-500">
                 <h3 class="text-[9px] font-black text-slate-400 uppercase mb-1">Omzet Hari Ini</h3>
-                <p id="totalOmzet" class="text-2xl font-black text-slate-800">Rp 0</p>
-                <div id="breakdownStan" class="mt-2 space-y-1 text-[8px] font-bold text-slate-500 uppercase"></div>
+                <p id="totalOmzet" class="text-2xl font-black text-slate-800 tracking-tighter">Rp 0</p>
+                <div id="breakdownStan" class="mt-3 space-y-1 text-[8px] font-bold text-slate-500 uppercase italic"></div>
             </div>
-            <div class="bg-white p-5 rounded-[2rem] shadow-sm border-t-4 border-indigo-600">
-                <h3 class="text-[9px] font-black text-slate-400 uppercase mb-1">Total Saldo Beredar</h3>
-                <p id="totalDeposit" class="text-2xl font-black text-indigo-700">Rp 0</p>
+            
+            <div class="bg-white p-6 rounded-[2.5rem] shadow-sm border-t-8 border-indigo-600">
+                <h3 class="text-[9px] font-black text-slate-400 uppercase mb-1">Tabungan Siswa Beredar</h3>
+                <p id="totalDeposit" class="text-2xl font-black text-indigo-700 tracking-tighter">Rp 0</p>
+                <p class="text-[8px] font-bold text-slate-300 mt-2 uppercase italic">Total seluruh saldo kartu</p>
             </div>
-            <div class="bg-white p-5 rounded-[2rem] shadow-sm flex flex-col items-center justify-center">
-                <div class="w-full h-[100px]"><canvas id="chartStan"></canvas></div>
+
+            <div class="bg-white p-4 rounded-[2.5rem] shadow-sm flex items-center justify-center min-h-[120px]">
+                <canvas id="chartStan"></canvas>
             </div>
-            <div class="bg-white p-5 rounded-[2rem] shadow-sm border-t-4 border-orange-500 text-center">
-                <div class="grid grid-cols-1 gap-2">
-                    <button onclick="downloadLaporan()" class="bg-green-600 text-white p-2 rounded-xl text-[9px] font-black uppercase shadow-md">Export Excel 📄</button>
-                    <button onclick="cetakKolektif()" class="bg-slate-800 text-white p-2 rounded-xl text-[9px] font-black uppercase shadow-md">Cetak Kartu Siswa 🖨️</button>
-                    <button onclick="resetTransaksi()" class="text-red-500 text-[8px] font-bold uppercase italic">Kosongkan Demo Data</button>
-                </div>
+
+            <div class="bg-white p-6 rounded-[2.5rem] shadow-sm border-t-8 border-orange-500 flex flex-col justify-center">
+                <button onclick="downloadLaporan()" class="bg-green-600 text-white p-3 rounded-2xl text-[9px] font-black uppercase shadow-lg mb-2">Export Excel 📄</button>
+                <button onclick="resetTransaksi()" class="text-red-400 text-[8px] font-bold uppercase italic text-center hover:text-red-600 transition-colors">Hapus Semua Data Transaksi</button>
             </div>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            <div class="lg:col-span-4 space-y-4">
-                <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-200">
-                    <h3 class="text-[10px] font-black text-indigo-600 mb-4 uppercase italic">Kelola Member Demo</h3>
+            <div class="lg:col-span-4">
+                <div class="bg-white p-6 rounded-[2.5rem] shadow-sm border border-slate-200">
+                    <h3 class="text-[10px] font-black text-indigo-600 mb-4 uppercase italic flex items-center gap-2">
+                        <span class="bg-indigo-50 p-1 px-2 rounded-lg">👤</span> Edit Member/Siswa
+                    </h3>
                     <div class="space-y-3">
-                        <input type="text" id="idSiswa" placeholder="ID Kartu / NIS (Scan Disini)" class="w-full p-4 bg-slate-50 rounded-2xl font-bold text-xs outline-none focus:ring-2 ring-indigo-500">
-                        <input type="text" id="namaSiswa" placeholder="Nama Lengkap" class="w-full p-4 bg-slate-50 rounded-2xl font-bold text-xs outline-none uppercase">
+                        <input type="text" id="idSiswa" placeholder="ID Kartu (Scan/Ketik)" class="w-full p-4 bg-slate-50 rounded-2xl font-bold text-xs outline-none focus:ring-2 ring-indigo-500">
+                        <input type="text" id="namaSiswa" placeholder="NAMA LENGKAP" class="w-full p-4 bg-slate-50 rounded-2xl font-bold text-xs outline-none uppercase">
                         <select id="kelasSiswa" class="w-full p-4 bg-slate-50 rounded-2xl font-bold text-xs outline-none">
-                            <option value="">-- Pilih Kelas --</option>
+                            <option value="">Pilih Kelas</option>
                             <option value="Kelas 1">Kelas 1</option><option value="Kelas 2">Kelas 2</option>
                             <option value="Kelas 3">Kelas 3</option><option value="Kelas 4">Kelas 4</option>
                             <option value="Kelas 5">Kelas 5</option><option value="Kelas 6">Kelas 6</option>
                             <option value="GURU">GURU / STAF</option>
                         </select>
-                        <input type="number" id="saldoSiswa" placeholder="Top Up Saldo (Rp)" class="w-full p-4 bg-emerald-50 rounded-2xl font-bold text-xs outline-none text-emerald-600">
-                        <button onclick="updateSiswa()" class="w-full bg-indigo-600 text-white font-black py-4 rounded-2xl shadow-lg uppercase text-[10px] tracking-widest hover:bg-indigo-700 transition-all">Simpan & Update</button>
+                        <input type="number" id="saldoSiswa" placeholder="Saldo Baru (Rp)" class="w-full p-4 bg-emerald-50 rounded-2xl font-bold text-xs outline-none text-emerald-600">
+                        <button onclick="updateSiswa()" class="w-full bg-indigo-600 text-white font-black py-4 rounded-2xl shadow-lg uppercase text-[10px] tracking-widest hover:bg-indigo-700 active:scale-95 transition-all">Simpan Perubahan</button>
                     </div>
                 </div>
             </div>
 
-            <div class="lg:col-span-8 space-y-6">
-                <div class="bg-white p-6 rounded-[2rem] shadow-sm overflow-hidden border">
-                    <h3 class="text-[10px] font-black text-slate-400 uppercase italic mb-4">Aktivitas Transaksi (Real-Time)</h3>
-                    <div class="overflow-x-auto max-h-[350px]">
+            <div class="lg:col-span-8">
+                <div class="bg-white p-6 rounded-[2.5rem] shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-[10px] font-black text-slate-400 uppercase italic">Aktivitas Transaksi Hari Ini</h3>
+                        <div class="h-2 w-2 bg-red-500 rounded-full animate-pulse"></div>
+                    </div>
+                    <div class="overflow-x-auto max-h-[400px]">
                         <table class="w-full text-[10px] text-left" id="tabelLaporan">
                             <thead class="bg-slate-50 sticky top-0">
                                 <tr class="text-slate-400 border-b">
-                                    <th class="p-3">WAKTU</th>
-                                    <th>PEMBELI</th>
-                                    <th>ITEM</th>
-                                    <th class="text-right p-3">TOTAL</th>
+                                    <th class="p-3">JAM</th>
+                                    <th>SISWA</th>
+                                    <th>PESANAN</th>
+                                    <th class="text-right p-3">NOMINAL</th>
                                 </tr>
                             </thead>
-                            <tbody id="logTableBody" class="divide-y divide-slate-50 font-bold italic text-slate-700"></tbody>
+                            <tbody id="logTableBody" class="divide-y divide-slate-50 font-bold italic text-slate-700">
+                                </tbody>
                         </table>
                     </div>
-                </div>
-
-                <div class="bg-white p-6 rounded-[2rem] shadow-sm border">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-[10px] font-black text-slate-400 uppercase italic">Daftar Member & Monitoring</h3>
-                        <select id="filterKelas" onchange="loadData()" class="p-2 bg-indigo-600 text-white rounded-xl text-[10px] font-black outline-none">
-                            <option value="SEMUA">SEMUA KELAS</option>
-                            <option value="Kelas 1">KELAS 1</option><option value="Kelas 2">KELAS 2</option>
-                            <option value="Kelas 3">KELAS 3</option><option value="Kelas 4">KELAS 4</option>
-                            <option value="Kelas 5">KELAS 5</option><option value="Kelas 6">KELAS 6</option>
-                            <option value="GURU">GURU/STAF</option>
-                        </select>
-                    </div>
-                    <div id="siswaList" class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[300px] overflow-y-auto p-1"></div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // CONFIG FIREBASE DEMO - SUDAH DISESUAIKAN
+        // CEK LOGIN
+        if (sessionStorage.getItem("adminLoggedIn") !== "true") { window.location.replace("login.html"); }
+
         const firebaseConfig = {
-            apiKey: "AIzaSyABx43ATNuwFgSlBIXyr181kTlCiotm6L4",
-            authDomain: "e-kantin-demo.firebaseapp.com",
-            databaseURL: "https://e-kantin-demo-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "e-kantin-demo",
-            storageBucket: "e-kantin-demo.firebasestorage.app",
-            messagingSenderId: "620482510602",
-            appId: "1:620482510602:web:c1dd8e7945b546aea004f3"
+            apiKey: "AIzaSyCUjE8WXa8Py4vnojrXDUR3uCvnQEzP6zQ",
+            authDomain: "e-kantin-91f0c.firebaseapp.com",
+            databaseURL: "https://e-kantin-91f0c-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "e-kantin-91f0c",
+            storageBucket: "e-kantin-91f0c.firebasestorage.app",
+            messagingSenderId: "981834126006",
+            appId: "1:981834126006:web:dac8bb0ec1da90549b4c17"
         };
-        
-        firebase.initializeApp(firebaseConfig);
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
         let myChart = null;
 
-        // Load Data Langsung (Tanpa Login untuk Demo)
-        loadData();
+        function logout() { sessionStorage.clear(); window.location.href = "login.html"; }
 
         function updateSiswa() {
             const id = document.getElementById('idSiswa').value.trim();
@@ -130,116 +127,89 @@
             const saldo = parseInt(document.getElementById('saldoSiswa').value) || 0;
             
             if(id && nama && kelas) {
-                db.ref('kantin_users/' + id).set({ id, nama, kelas, saldo }).then(() => { 
-                    alert("Member Berhasil Diperbarui!"); 
+                db.ref('kantin_users/' + id).update({ nama, kelas, saldo }).then(() => { 
+                    alert("Data Berhasil Diperbarui!"); 
                     ['idSiswa','namaSiswa','saldoSiswa'].forEach(i => document.getElementById(i).value = "");
                 });
-            } else { alert("Mohon lengkapi ID, Nama, dan Kelas!"); }
+            } else { alert("Lengkapi data!"); }
         }
 
-        function loadData() {
-            const filterKls = document.getElementById('filterKelas').value;
-            
-            // Sync Real-Time Member
-            db.ref('kantin_users').on('value', snap => {
-                let totalSmuaDeposit = 0;
-                const cont = document.getElementById('siswaList'); cont.innerHTML = "";
-                snap.forEach(s => {
-                    const d = s.val();
-                    totalSmuaDeposit += (d.saldo || 0);
-                    if(filterKls === "SEMUA" || d.kelas === filterKls) {
-                        cont.innerHTML += `
-                            <div class="p-3 bg-slate-50 rounded-2xl flex justify-between items-center border border-slate-100 shadow-sm">
-                                <div>
-                                    <span class="bg-indigo-600 text-white text-[7px] font-black px-2 py-0.5 rounded-md uppercase">${d.kelas}</span>
-                                    <p class="text-[10px] font-black text-slate-700 uppercase mt-1 leading-none">${d.nama}</p>
-                                    <p class="text-[9px] font-bold text-emerald-600">Saldo: Rp ${(d.saldo || 0).toLocaleString()}</p>
-                                </div>
-                                <div class="flex gap-1">
-                                    <button onclick="isiForm('${d.id}','${d.nama}','${d.kelas}',${d.saldo})" class="p-2 bg-indigo-600 text-white rounded-lg text-[8px] font-black">EDIT</button>
-                                    <button onclick="hapusSiswa('${d.id}')" class="p-2 bg-red-100 text-red-500 rounded-lg text-[8px]">×</button>
-                                </div>
-                            </div>`;
-                    }
-                });
-                document.getElementById('totalDeposit').innerText = "Rp " + totalSmuaDeposit.toLocaleString();
-            });
+        // MONITORING REAL-TIME
+        function initMonitoring() {
+            // 1. Monitor Omzet & Grafik
+            db.ref('kantin_laporan').on('value', snap => {
+                let totalOmzet = 0;
+                let dataGrup = {};
+                const body = document.getElementById('logTableBody');
+                body.innerHTML = "";
 
-            // Laporan Transaksi Real-Time
-            db.ref('kantin_laporan').limitToLast(50).on('value', snap => {
-                const body = document.getElementById('logTableBody'); body.innerHTML = "";
-                let totalSmua = 0; let stanGrup = {};
-                
-                snap.forEach(l => {
-                    const d = l.val();
-                    totalSmua += d.total;
-                    stanGrup[d.stan] = (stanGrup[d.stan] || 0) + d.total;
-                    
+                snap.forEach(row => {
+                    const l = row.val();
+                    totalOmzet += l.total;
+                    dataGrup[l.stan] = (dataGrup[l.stan] || 0) + l.total;
+
                     body.innerHTML = `<tr>
-                        <td class="p-3 text-slate-400 font-normal">${d.waktu}</td>
-                        <td class="uppercase">${d.namaSiswa}</td>
-                        <td class="text-indigo-600 font-black text-[9px] uppercase italic">${d.item || 'Belanja'}</td>
-                        <td class="text-right p-3 text-green-600 font-black">Rp ${d.total.toLocaleString()}</td>
+                        <td class="p-3 text-slate-400 font-normal italic">${l.waktu.split(',')[1]}</td>
+                        <td class="uppercase">${l.namaSiswa}</td>
+                        <td class="text-indigo-600 uppercase font-black text-[8px]">${l.item}</td>
+                        <td class="text-right p-3 text-emerald-600 font-black">Rp ${l.total.toLocaleString()}</td>
                     </tr>` + body.innerHTML;
                 });
-                
-                document.getElementById('totalOmzet').innerText = "Rp " + totalSmua.toLocaleString();
-                const breakEl = document.getElementById('breakdownStan'); breakEl.innerHTML = "";
-                Object.keys(stanGrup).forEach(s => { 
-                    breakEl.innerHTML += `<div class="flex justify-between border-b border-slate-50"><span>${s}</span><span>Rp ${stanGrup[s].toLocaleString()}</span></div>`; 
-                });
-                updateChart(stanGrup);
+
+                document.getElementById('totalOmzet').innerText = "Rp " + totalOmzet.toLocaleString();
+                updateBreakdown(dataGrup);
+                updateChart(dataGrup);
+            });
+
+            // 2. Monitor Saldo Beredar
+            db.ref('kantin_users').on('value', snap => {
+                let totalSaldo = 0;
+                snap.forEach(s => { totalSaldo += (s.val().saldo || 0); });
+                document.getElementById('totalDeposit').innerText = "Rp " + totalSaldo.toLocaleString();
             });
         }
 
-        function updateChart(stanData) {
+        function updateBreakdown(data) {
+            const el = document.getElementById('breakdownStan');
+            el.innerHTML = "";
+            Object.keys(data).forEach(s => {
+                el.innerHTML += `<div class="flex justify-between border-b border-slate-50 pb-1">
+                    <span>${s}</span><span>Rp ${data[s].toLocaleString()}</span>
+                </div>`;
+            });
+        }
+
+        function updateChart(data) {
             const ctx = document.getElementById('chartStan').getContext('2d');
             if (myChart) myChart.destroy();
             myChart = new Chart(ctx, {
                 type: 'doughnut',
-                data: { labels: Object.keys(stanData), datasets: [{ data: Object.values(stanData), backgroundColor: ['#4338ca', '#f59e0b', '#10b981', '#ef4444'], borderWidth: 0 }] },
+                data: {
+                    labels: Object.keys(data),
+                    datasets: [{
+                        data: Object.values(data),
+                        backgroundColor: ['#4338ca', '#f59e0b', '#10b981'],
+                        borderWidth: 0,
+                        hoverOffset: 10
+                    }]
+                },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
             });
         }
 
-        function downloadLaporan() { 
-            const wb = XLSX.utils.table_to_book(document.getElementById("tabelLaporan")); 
-            XLSX.writeFile(wb, `E-Kantin_Demo_Report.xlsx`); 
+        function downloadLaporan() {
+            const wb = XLSX.utils.table_to_book(document.getElementById("tabelLaporan"));
+            XLSX.writeFile(wb, `Laporan_E-Kantin_SDN169.xlsx`);
         }
 
-        function cetakKolektif() {
-            const filter = document.getElementById('filterKelas').value;
-            const win = window.open('', '_blank');
-            win.document.write(`<html><head><title>Cetak Kartu Demo</title><style>@page { size: A4; margin: 5mm; } body { font-family: sans-serif; display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; } .card { border: 2px solid #312e81; border-radius: 10px; padding: 10px; text-align: center; } .header { background: #312e81; color: white; padding: 5px; font-size: 10px; font-weight: bold; margin-bottom: 10px; }</style></head><body>`);
-            db.ref('kantin_users').once('value', snap => {
-                snap.forEach(s => {
-                    const d = s.val();
-                    if(filter === "SEMUA" || d.kelas === filter) {
-                        win.document.write(`<div class="card"><div class="header">DEMO E-KANTIN</div><div style="font-size:12px; font-weight:900">${d.nama}</div><div style="font-size:10px">${d.kelas}</div><div id="qr-${d.id}" style="margin:10px auto; display:flex; justify-content:center"></div></div>`);
-                    }
-                });
-                win.document.write(`<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"><\/script><script>`);
-                snap.forEach(s => {
-                    const d = s.val();
-                    if(filter === "SEMUA" || d.kelas === filter) {
-                        win.document.write(`new QRCode(document.getElementById("qr-${d.id}"), {text:"${d.id}", width:60, height:60});`);
-                    }
-                });
-                win.document.write(`setTimeout(()=>{window.print();},1000);<\/script></body></html>`);
-                win.document.close();
-            });
+        function resetTransaksi() {
+            if(confirm("HAPUS SEMUA DATA TRANSAKSI? Ini tidak bisa dibatalkan!")) {
+                db.ref('kantin_laporan').remove();
+                alert("Database laporan dikosongkan.");
+            }
         }
 
-        function isiForm(id, nama, kelas, saldo) { 
-            document.getElementById('idSiswa').value = id; 
-            document.getElementById('namaSiswa').value = nama; 
-            document.getElementById('kelasSiswa').value = kelas; 
-            document.getElementById('saldoSiswa').value = saldo; 
-            window.scrollTo({ top: 0, behavior: 'smooth' }); 
-        }
-
-        function resetTransaksi() { if(confirm("Hapus semua riwayat transaksi demo?")) db.ref('kantin_laporan').remove().then(()=>location.reload()); }
-        function hapusSiswa(id) { if(confirm("Hapus member ini dari database demo?")) db.ref('kantin_users').child(id).remove(); }
+        initMonitoring();
     </script>
 </body>
 </html>
