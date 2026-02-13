@@ -3,42 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Admin</title>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <title>Login Admin Demo - E-Kantin</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
 </head>
-<body class="bg-slate-900 min-h-screen flex items-center justify-center p-6">
-    <div class="bg-white w-full max-w-sm rounded-[2.5rem] p-10 shadow-2xl">
-        <h2 class="text-center text-2xl font-black text-slate-800 mb-8 uppercase italic">Login Admin</h2>
-        <div class="space-y-4">
-            <input type="email" id="email" placeholder="Email Admin" class="w-full bg-slate-50 p-4 rounded-2xl outline-none border-2 border-transparent focus:border-indigo-500 font-bold text-xs">
-            <input type="password" id="password" placeholder="Password" class="w-full bg-slate-50 p-4 rounded-2xl outline-none border-2 border-transparent focus:border-indigo-500 font-bold text-xs">
-            <button onclick="login()" class="w-full bg-indigo-600 text-white font-black p-5 rounded-2xl shadow-lg uppercase text-xs tracking-widest mt-4">Masuk ke Admin 🚀</button>
-            <p id="msg" class="text-center text-red-500 text-[10px] font-bold uppercase mt-4"></p>
+<body class="bg-slate-950 min-h-screen flex items-center justify-center p-6 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]">
+    
+    <div class="bg-white w-full max-w-sm rounded-[3rem] p-10 shadow-2xl relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-indigo-600 to-emerald-500"></div>
+        
+        <div class="text-center mb-8">
+            <div class="inline-block p-4 bg-indigo-50 rounded-3xl mb-4">
+                <span class="text-4xl">🔑</span>
+            </div>
+            <h2 class="text-2xl font-black text-slate-800 uppercase italic tracking-tighter">Login Demo</h2>
+            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-1">Akses Dashboard Pengelola</p>
         </div>
-        <a href="index.html" class="block text-center mt-6 text-[10px] font-bold text-slate-400 uppercase">Kembali ke Portal</a>
+
+        <div class="space-y-4">
+            <div>
+                <label class="text-[9px] font-black text-slate-400 uppercase ml-4 mb-1 block">Username</label>
+                <input type="text" id="username" placeholder="Masukkan username" 
+                    class="w-full bg-slate-50 p-4 rounded-2xl outline-none border-2 border-transparent focus:border-indigo-500 font-bold text-xs transition-all">
+            </div>
+
+            <div>
+                <label class="text-[9px] font-black text-slate-400 uppercase ml-4 mb-1 block">Password</label>
+                <input type="password" id="password" placeholder="Masukkan password" 
+                    class="w-full bg-slate-50 p-4 rounded-2xl outline-none border-2 border-transparent focus:border-indigo-500 font-bold text-xs transition-all">
+            </div>
+
+            <button onclick="loginDemo()" class="w-full bg-indigo-600 text-white font-black p-5 rounded-2xl shadow-xl uppercase text-[10px] tracking-[0.2em] mt-6 hover:bg-indigo-700 active:scale-95 transition-all">
+                Masuk Sekarang 🚀
+            </button>
+            
+            <div id="msg" class="text-center text-red-500 text-[9px] font-black uppercase mt-4 min-h-[1rem]"></div>
+        </div>
+
+        <div class="mt-8 pt-6 border-t border-slate-100 flex flex-col items-center gap-4">
+            <p class="text-[8px] text-slate-300 font-bold uppercase tracking-[0.3em]">Demo Mode Active</p>
+            <a href="index.html" class="text-[9px] font-black text-slate-400 hover:text-indigo-600 uppercase tracking-widest transition-colors">← Kembali</a>
+        </div>
     </div>
 
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyCUjE8WXa8Py4vnojrXDUR3uCvnQEzP6zQ",
-            authDomain: "e-kantin-91f0c.firebaseapp.com",
-            databaseURL: "https://e-kantin-91f0c-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "e-kantin-91f0c",
-            storageBucket: "e-kantin-91f0c.firebasestorage.app",
-            messagingSenderId: "981834126006",
-            appId: "1:981834126006:web:dac8bb0ec1da90549b4c17"
-        };
-        firebase.initializeApp(firebaseConfig);
-
-        function login() {
-            const email = document.getElementById('email').value;
-            const pass = document.getElementById('password').value;
+        function loginDemo() {
+            const user = document.getElementById('username').value.trim();
+            const pass = document.getElementById('password').value.trim();
             const msg = document.getElementById('msg');
-            firebase.auth().signInWithEmailAndPassword(email, pass)
-            .then(() => { window.location.href = "admin-kantin.html"; })
-            .catch(() => { msg.innerText = "Akses Ditolak! Cek Email/Password."; });
+
+            // Logika Login Standar Demo
+            if (user === "admin" && pass === "admin123") {
+                msg.classList.replace('text-red-500', 'text-emerald-500');
+                msg.innerText = "Login Berhasil! Membuka Dashboard...";
+                
+                // Set session agar halaman admin tahu kita sudah login
+                sessionStorage.setItem("adminLoggedIn", "true");
+
+                setTimeout(() => {
+                    window.location.href = "admin-kantin.html"; 
+                }, 800);
+            } else {
+                msg.innerText = "Username atau Password Salah!";
+                // Efek getar pada input jika salah (opsional)
+                if (navigator.vibrate) navigator.vibrate(200);
+            }
         }
     </script>
 </body>
